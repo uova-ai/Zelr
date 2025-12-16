@@ -7,13 +7,12 @@ type ListingForMap = {
   id: number;
   latitude: number;
   longitude: number;
-  // add any other fields you need, but these are all Map requires
 };
 
 type MapProps = {
   listings: ListingForMap[];
   selectedId: number | null;
-  onSelect: (id: number) => void;
+  onSelect: (id: number) => void; // ✅ number (not string)
 };
 
 export default function Map({ listings, selectedId, onSelect }: MapProps) {
@@ -25,20 +24,19 @@ export default function Map({ listings, selectedId, onSelect }: MapProps) {
     if (!containerRef.current) return;
     if (mapRef.current) return;
 
-    // IMPORTANT: Ensure NEXT_PUBLIC_MAPBOX_TOKEN exists locally AND in Vercel env vars
+    // Make sure NEXT_PUBLIC_MAPBOX_TOKEN exists locally + in Vercel env vars
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
 
     mapRef.current = new mapboxgl.Map({
       container: containerRef.current,
       style: "mapbox://styles/mapbox/light-v11",
-      center: [-79.8711, 43.2557], // default: Hamilton-ish
+      center: [-79.3832, 43.6532], // Toronto default
       zoom: 10,
     });
 
-    mapRef.current.addControl(new mapboxgl.NavigationControl(), "bottom-right");
+    mapRef.current.addControl(new mapboxgl.NavigationControl(), "top-right");
   }, []);
 
-  // Render markers whenever listings or selection changes
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -51,13 +49,13 @@ export default function Map({ listings, selectedId, onSelect }: MapProps) {
       const el = document.createElement("div");
 
       const isSelected = selectedId === listing.id;
-      el.className = `
-        w-5 h-5 rounded-full cursor-pointer
-        ${isSelected ? "bg-black" : "bg-blue-600"}
-        border border-white shadow-md
-      `.trim();
+      el.className = `w-5 h-5 rounded-full cursor-pointer border border-white shadow-md ${
+        isSelected ? "bg-blue-600" : "bg-black"
+      }`;
 
-      el.addEventListener("click", () => onSelect(listing.id));
+      el.addEventListener("click", () => {
+        onSelect(listing.id); // ✅ number -> matches prop type
+      });
 
       const marker = new mapboxgl.Marker(el)
         .setLngLat([listing.longitude, listing.latitude])
@@ -67,5 +65,5 @@ export default function Map({ listings, selectedId, onSelect }: MapProps) {
     });
   }, [listings, selectedId, onSelect]);
 
-  return <div ref={containerRef} className="h-full w-full" />;
+  return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />;
 }
