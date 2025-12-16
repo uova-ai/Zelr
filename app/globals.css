@@ -1,15 +1,24 @@
-/* Tailwind v4 uses a single import */
-@import "tailwindcss";
+/* app/globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* Your global styles */
-:root { color-scheme: dark; }
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+}
 
 body {
-  background:
-    radial-gradient(1200px 600px at 70% -10%, #26326b 0%, transparent 60%),
-    radial-gradient(1000px 500px at -10% 10%, #14182f 0%, transparent 60%),
-    #0A0B10;
-  color: #fff;
+  /* Plain CSS instead of @apply to avoid Tailwind error */
+  background-color: #020617; /* same as zelrBg in tailwind.config.js */
+  color: #f9fafb;            /* light text */
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
 }

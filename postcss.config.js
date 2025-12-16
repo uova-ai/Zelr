@@ -1,7 +1,7 @@
-// Tailwind v4 + Next.js 16 (Turbopack) — correct PostCSS plugin:
+// postcss.config.js
 module.exports = {
   plugins: {
-    '@tailwindcss/postcss': {},
+    tailwindcss: {},
     autoprefixer: {},
   },
 };
