@@ -28,7 +28,7 @@ export default function Map({ selectedId, onSelect }: Props) {
     listings.forEach((listing) => {
       const el = document.createElement("div");
       el.className = `w-5 h-5 rounded-full cursor-pointer ${
-        selectedId === listing.id ? "bg-blue-600" : "bg-black"
+Number(selectedId) === listing.id ? "bg-blue-600" : "bg-black"
       }`;
 
       el.addEventListener("click", () => onSelect(listing.id));
