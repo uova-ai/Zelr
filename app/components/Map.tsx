@@ -1,14 +1,13 @@
-// app/components/Map.tsx
 "use client";
 
 import { useEffect, useRef } from "react";
 import mapboxgl from "mapbox-gl";
 
 type ListingForMap = {
-  id: string | number;
+  id: number;
   latitude: number;
   longitude: number;
-  // add any other fields you use elsewhere, but not required for the map
+  // add any other fields you need, but these are all Map requires
 };
 
 type MapProps = {
@@ -26,53 +25,47 @@ export default function Map({ listings, selectedId, onSelect }: MapProps) {
     if (!containerRef.current) return;
     if (mapRef.current) return;
 
-    // Mapbox token (make sure it exists locally + in Vercel env vars)
+    // IMPORTANT: Ensure NEXT_PUBLIC_MAPBOX_TOKEN exists locally AND in Vercel env vars
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
 
     mapRef.current = new mapboxgl.Map({
       container: containerRef.current,
       style: "mapbox://styles/mapbox/light-v11",
-      center: [-79.3832, 43.6532], // Toronto default
+      center: [-79.8711, 43.2557], // default: Hamilton-ish
       zoom: 10,
     });
 
-    mapRef.current.addControl(new mapboxgl.NavigationControl(), "top-right");
-
-    return () => {
-      mapRef.current?.remove();
-      mapRef.current = null;
-    };
+    mapRef.current.addControl(new mapboxgl.NavigationControl(), "bottom-right");
   }, []);
 
+  // Render markers whenever listings or selection changes
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
 
-    // Remove old markers
-    for (const m of markersRef.current) m.remove();
+    // clear old markers
+    markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
 
-    // Add markers
-    for (const listing of listings) {
-      const idNum = Number(listing.id);
-
+    listings.forEach((listing) => {
       const el = document.createElement("div");
-      el.className = "w-5 h-5 rounded-full cursor-pointer border border-white shadow";
-      // highlight selected
-      el.style.background = selectedId === idNum ? "#111827" : "#2563eb"; // black vs blue
 
-      el.addEventListener("click", (e) => {
-        e.stopPropagation();
-        onSelect(idNum);
-      });
+      const isSelected = selectedId === listing.id;
+      el.className = `
+        w-5 h-5 rounded-full cursor-pointer
+        ${isSelected ? "bg-black" : "bg-blue-600"}
+        border border-white shadow-md
+      `.trim();
+
+      el.addEventListener("click", () => onSelect(listing.id));
 
       const marker = new mapboxgl.Marker(el)
         .setLngLat([listing.longitude, listing.latitude])
         .addTo(map);
 
       markersRef.current.push(marker);
-    }
+    });
   }, [listings, selectedId, onSelect]);
 
-  return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />;
+  return <div ref={containerRef} className="h-full w-full" />;
 }
