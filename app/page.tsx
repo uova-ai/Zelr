@@ -293,9 +293,7 @@ const listings: Listing[] = generatedListings.map((l) => ({
 }));
 
 export default function HomePage() {
-  const [selectedId, setSelectedId] = useState<number | null>(
-    listings[0]?.id ?? null
-  );
+const [selectedId, setSelectedId] = useState<number | null>(null);
   const [detailId, setDetailId] = useState<number | null>(null);
   const [showScoreDetails, setShowScoreDetails] = useState(false);
 
@@ -334,7 +332,7 @@ export default function HomePage() {
     startIndex + perPage
   );
 
-  const cardRefs = useRef<Record<number, HTMLDivElement | null>>({});
+const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const listContainerRef = useRef<HTMLDivElement | null>(null);
 
   const detailListing = listings.find((l) => l.id === detailId) ?? null;
@@ -595,7 +593,7 @@ export default function HomePage() {
                 <div
                   key={listing.id}
                   ref={(el) => {
-                    cardRefs.current[listing.id] = el;
+cardRefs.current[String(listing.id)] = el;
                   }}
                 >
                   <ListingCard
@@ -839,7 +837,7 @@ export default function HomePage() {
                   >
                     <ZelrScoreHeroBadge
                       score={detailListing.score}
-                      className="cursor-pointer"
+                    
                     />
                   </button>
                 </div>

@@ -54,18 +54,10 @@ type SearchTarget = {
 
 type ZelrMapProps = {
   listings: ListingForMap[];
-  selectedId: number | string | null;
-  onSelect: (id: number | string) => void;
-  onOpenOverlay?: (id: number | string) => void;
-  /**
-   * Called whenever the map bounds change (panning / zooming / search jump)
-   * so the right-side list can show only homes in view.
-   */
+  selectedId: number | null;
+  onSelect: (id: number) => void;
+  onOpenOverlay?: (id: number) => void;
   onBoundsChange?: (bounds: BoundsPayload) => void;
-  /**
-   * When the user picks "Hamilton, ON" etc from the search bar, we pass
-   * a target center + zoom here and the map animates into that area.
-   */
   searchTarget?: SearchTarget | null;
 };
 
@@ -114,9 +106,9 @@ export default function ZelrMap({
 
   const handlePinClick = useCallback(
     (listing: ListingForMap) => {
-      onSelect(listing.id);
-      setPreviewId(listing.id);
-
+ const id = Number(listing.id);
+onSelect(id);
+setPreviewId(id);
       if (map) {
         map.panTo({ lat: listing.lat, lng: listing.lng });
         // nudge map up so the selected pin sits just under the preview card
@@ -414,7 +406,7 @@ export default function ZelrMap({
             onClose={() => setPreviewId(null)}
             onOpenOverlay={() => {
               if (onOpenOverlay) {
-                onOpenOverlay(previewListing.id);
+const [previewListing, setPreviewListing] = useState<ListingForMap | null>(null);
               }
             }}
           />
